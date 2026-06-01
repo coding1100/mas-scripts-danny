@@ -30,19 +30,30 @@ docker run -d --name mas-pg `
   postgres:15
 ```
 
-## 4. Clone the warehouse (remote -> local, streamed)
-Stream `pg_dump` (remote, via the session pooler) straight into `pg_restore`
-(local). Run from the `postgres:15` image so versions match the server (15.8).
-NOTE: reads the production warehouse (read-only via the `mas_readonly` role).
+## 4. Clone the warehouse (remote -> local)
 
+**Easiest — one command.** Reads all creds from `.env`, starts the local
+container if needed, clones the 3 tables, and verifies counts. Re-runnable.
+```powershell
+python clone_warehouse.py        # add --fresh to rebuild the local DB from scratch
+```
+Expected: `mas_customers 134625 | mas_orders 610109 | mas_products 815011`.
+
+> ⚠️ **Security:** the manual command below contains the live `mas_readonly`
+> password. It is a READ-ONLY role, but it is still a real credential — do **not**
+> commit/push this file with the password in it. `clone_warehouse.py` keeps creds
+> in the gitignored `.env`, which is the safer path.
+
+**Manual equivalent.** Streams `pg_dump` (remote, session pooler) into
+`pg_restore` (local), from the `postgres:15` image so versions match (15.8):
 ```bash
-# Values come from .env (SOURCE_DB_*). The session pooler is required (see note below).
 CONN="host=aws-0-us-east-1.pooler.supabase.com port=5432 dbname=postgres \
-user=mas_readonly.<project-ref> password=<pw>"
+user=mas_readonly.psqbggaverxwqlnokgxy password=z:4S#Fi-7n1~"
 
 docker run --rm postgres:15 pg_dump "$CONN" -Fc --no-owner --no-privileges \
   -t public.mas_customers -t public.mas_orders -t public.mas_products \
-  | docker exec -i mas-pg pg_restore -U postgres -d mas_warehouse --no-owner --no-privileges
+  | docker exec -i mas-pg pg_restore -U postgres -d mas_warehouse \
+      --no-owner --no-privileges --clean --if-exists
 ```
 
 ## 5. Verify

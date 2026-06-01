@@ -15,6 +15,7 @@ Usage:
     python analysis/clean_customer_list.py            # all stores
     python analysis/clean_customer_list.py --store 001
 """
+import utils.session
 import argparse
 import os
 import re

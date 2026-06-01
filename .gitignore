@@ -1,6 +1,4 @@
 # Secrets — NEVER commit
-.env
-.env.*
 !.env.example
 
 # Local DB dumps / clones (can be large + contain customer PII)
@@ -26,5 +24,6 @@ env/
 # OS / editor
 .DS_Store
 Thumbs.db
-.vscode/
 .idea/
+config.bat
+node_modules
