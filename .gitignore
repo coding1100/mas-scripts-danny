@@ -1,0 +1,30 @@
+# Secrets — NEVER commit
+.env
+.env.*
+!.env.example
+
+# Local DB dumps / clones (can be large + contain customer PII)
+*.dump
+*.sql.gz
+*.backup
+/dumps/
+/data/
+
+# Analysis outputs (may contain PII)
+/exports/
+*.csv
+!**/sample_*.csv
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
